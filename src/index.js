@@ -1,5 +1,3 @@
-import "./style.css";
-
 const urlParams = new URLSearchParams(location.search);
 
 let roomId = urlParams.get("id");
@@ -10,18 +8,22 @@ if (!roomId) {
 }
 
 const textArea = document.querySelector("textarea");
-const wsurl = `wss://us-nyc-1.websocket.me/v3/${roomId}?api_key=OXRCUIAFhl9ip9WXwAlQIIqtakRpe58g2vkd1cKFqHFOX3YgXh36NdtydCup&notify_self`;
 
-const socket = new WebSocket(wsurl);
+const worker = new Worker("worker.js");
 
-socket.onopen = () => {};
+const wsurl = `wss://us-nyc-1.websocket.me/v3/${roomId}?api_key=OXRCUIAFhl9ip9WXwAlQIIqtakRpe58g2vkd1cKFqHFOX3YgXh36NdtydCup`;
 
-socket.onmessage = (e) => {
-  //   console.log(e.data);
-  textArea.value = e.data;
+worker.postMessage({ type: "url", data: wsurl });
+
+worker.onmessage = (ev) => {
+  textArea.value = ev.data;
+  const ae = new Audio(
+    "https://www.google.com/logos/fnbx/animal_sounds/cat.mp3"
+  );
+  ae.play();
 };
 
-textArea.addEventListener("change", (e) => {
+textArea.addEventListener("keyup", (e) => {
   //   console.log(e.target.value);
-  socket.send(e.target.value);
+  worker.postMessage({ type: "ws_post", data: e.target.value });
 });
