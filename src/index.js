@@ -1,5 +1,4 @@
-import { nanoid } from "nanoid";
-import css from "./style.css";
+import "./style.css";
 
 const urlParams = new URLSearchParams(location.search);
 
